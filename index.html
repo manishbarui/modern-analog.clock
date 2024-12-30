@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clock</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Root element where the React component will be mounted -->
+  <div id="root"></div>
+
+  <!-- React and ReactDOM scripts -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+  <!-- Babel for transpiling JSX -->
+  <script src="https://unpkg.com/@babel/standalone"></script>
+
+  <!-- Your JavaScript (React Component) -->
+  <script type="text/babel">
+    // React component code here
+    'use client';
+
+    const { useState, useEffect } = React;
+
+    function Clock() {
+      const [time, setTime] = useState(new Date());
+
+      useEffect(() => {
+        const timer = setInterval(() => {
+          setTime(new Date());
+        }, 1000);
+
+        return () => clearInterval(timer);
+      }, []);
+
+      const hours = time.getHours();
+      const minutes = time.getMinutes();
+      const seconds = time.getSeconds();
+
+      const secondDegrees = (seconds / 60) * 360;
+      const minuteDegrees = ((minutes + seconds / 60) / 60) * 360;
+      const hourDegrees = ((hours % 12 + minutes / 60) / 12) * 360;
+
+      return (
+        <div className="clock-container">
+          <div className="clock">
+            {[...Array(60)].map((_, i) => {
+              const rotation = i * 6;
+              const isHour = i % 5 === 0;
+              return (
+                <div
+                  key={i}
+                  className="clock-number"
+                  style={{
+                    transform: `rotate(${rotation}deg)`
+                  }}
+                >
+                  {isHour ? (
+                    <>
+                      <span
+                        className="hour-number"
+                        style={{
+                          transform: `rotate(-${rotation}deg)`,
+                        }}
+                      >
+                        {i === 0 ? 12 : i / 5}
+                      </span>
+                      <div className="hour-marker" />
+                    </>
+                  ) : (
+                    <div className="minute-marker" />
+                  )}
+                </div>
+              );
+            })}
+
+            <div
+              className="hour-hand"
+              style={{
+                transform: `rotate(${hourDegrees}deg)`
+              }}
+            />
+            <div
+              className="minute-hand"
+              style={{
+                transform: `rotate(${minuteDegrees}deg)`
+              }}
+            />
+            <div
+              className="second-hand"
+              style={{
+                transform: `rotate(${secondDegrees}deg)`
+              }}
+            />
+            <div className="center-dot" />
+          </div>
+
+          <div className="digital-time">
+            {hours.toString().padStart(2, '0')}:
+            {minutes.toString().padStart(2, '0')}:
+            {seconds.toString().padStart(2, '0')}
+          </div>
+        </div>
+      );
+    }
+
+    // Render the Clock component into the root element
+    ReactDOM.render(<Clock />, document.getElementById('root'));
+  </script>
+
+  <!-- Your CSS -->
+  <style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, html {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+}
+
+.clock-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.clock {
+  position: relative;
+  width: 350px;
+  height: 350px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2), inset 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.clock-number, .minute-marker, .hour-marker {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.hour-number {
+  position: absolute;
+  left: 50%;
+  top: 10px;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  transform-origin: center;
+  transform: translateX(-50%);
+}
+
+.minute-marker {
+  left: 50%;
+  width: 2px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.6);
+  transform: translateX(-50%);
+}
+
+.hour-marker {
+  left: 50%;
+  width: 4px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.8);
+  transform: translateX(-50%);
+}
+
+.hour-hand, .minute-hand, .second-hand {
+  position: absolute;
+  left: 50%;
+  bottom: 50%;
+  transform-origin: bottom center;
+  transform: translateX(-50%);
+  transition: transform 0.2s ease-in-out;
+}
+
+.hour-hand {
+  width: 8px;
+  height: 90px;
+  background: white;
+  border-radius: 4px;
+}
+
+.minute-hand {
+  width: 6px;
+  height: 120px;
+  background: #82c7ff;
+  border-radius: 3px;
+}
+
+.second-hand {
+  width: 3px;
+  height: 140px;
+  background: red;
+  border-radius: 3px;
+  box-shadow: 0 0 10px red;
+}
+
+.center-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 15px;
+  height: 15px;
+  background: #fff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 10px white;
+  }
+  50% {
+    box-shadow: 0 0 20px white;
+  }
+}
+
+.digital-time {
+  font-size: 40px;
+  letter-spacing: 2px;
+  animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+  </style>
+</body>
+</html>

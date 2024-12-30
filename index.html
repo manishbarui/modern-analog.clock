@@ -19,96 +19,98 @@
 
   <!-- Your JavaScript (React Component) -->
   <script type="text/babel">
-    // React component code here
-    'use client';
+  'use client';
 
-    const { useState, useEffect } = React;
+  const { useState, useEffect } = React;
 
-    function Clock() {
-      const [time, setTime] = useState(new Date());
+  function Clock() {
+    const [time, setTime] = useState(new Date());
 
-      useEffect(() => {
-        const timer = setInterval(() => {
-          setTime(new Date());
-        }, 1000);
+    useEffect(() => {
+      const timer = setInterval(() => {
+        setTime(new Date());
+      }, 1000);
 
-        return () => clearInterval(timer);
-      }, []);
+      return () => clearInterval(timer);
+    }, []);
 
-      const hours = time.getHours();
-      const minutes = time.getMinutes();
-      const seconds = time.getSeconds();
+    const hours24 = time.getHours();
+    const minutes = time.getMinutes();
+    const seconds = time.getSeconds();
 
-      const secondDegrees = (seconds / 60) * 360;
-      const minuteDegrees = ((minutes + seconds / 60) / 60) * 360;
-      const hourDegrees = ((hours % 12 + minutes / 60) / 12) * 360;
+    const hours12 = hours24 % 12 || 12; // Convert 0 to 12 for 12-hour format
+    const period = hours24 >= 12 ? 'PM' : 'AM'; // Determine AM or PM
 
-      return (
-        <div className="clock-container">
-          <div className="clock">
-            {[...Array(60)].map((_, i) => {
-              const rotation = i * 6;
-              const isHour = i % 5 === 0;
-              return (
-                <div
-                  key={i}
-                  className="clock-number"
-                  style={{
-                    transform: `rotate(${rotation}deg)`
-                  }}
-                >
-                  {isHour ? (
-                    <>
-                      <span
-                        className="hour-number"
-                        style={{
-                          transform: `rotate(-${rotation}deg)`,
-                        }}
-                      >
-                        {i === 0 ? 12 : i / 5}
-                      </span>
-                      <div className="hour-marker" />
-                    </>
-                  ) : (
-                    <div className="minute-marker" />
-                  )}
-                </div>
-              );
-            })}
+    const secondDegrees = (seconds / 60) * 360;
+    const minuteDegrees = ((minutes + seconds / 60) / 60) * 360;
+    const hourDegrees = ((hours24 % 12 + minutes / 60) / 12) * 360;
 
-            <div
-              className="hour-hand"
-              style={{
-                transform: `rotate(${hourDegrees}deg)`
-              }}
-            />
-            <div
-              className="minute-hand"
-              style={{
-                transform: `rotate(${minuteDegrees}deg)`
-              }}
-            />
-            <div
-              className="second-hand"
-              style={{
-                transform: `rotate(${secondDegrees}deg)`
-              }}
-            />
-            <div className="center-dot" />
-          </div>
+    return (
+      <div className="clock-container">
+        <div className="clock">
+          {[...Array(60)].map((_, i) => {
+            const rotation = i * 6;
+            const isHour = i % 5 === 0;
+            return (
+              <div
+                key={i}
+                className="clock-number"
+                style={{
+                  transform: `rotate(${rotation}deg)`
+                }}
+              >
+                {isHour ? (
+                  <>
+                    <span
+                      className="hour-number"
+                      style={{
+                        transform: `rotate(-${rotation}deg)`,
+                      }}
+                    >
+                      {i === 0 ? 12 : i / 5}
+                    </span>
+                    <div className="hour-marker" />
+                  </>
+                ) : (
+                  <div className="minute-marker" />
+                )}
+              </div>
+            );
+          })}
 
-          <div className="digital-time">
-            {hours.toString().padStart(2, '0')}:
-            {minutes.toString().padStart(2, '0')}:
-            {seconds.toString().padStart(2, '0')}
-          </div>
+          <div
+            className="hour-hand"
+            style={{
+              transform: `rotate(${hourDegrees}deg)`
+            }}
+          />
+          <div
+            className="minute-hand"
+            style={{
+              transform: `rotate(${minuteDegrees}deg)`
+            }}
+          />
+          <div
+            className="second-hand"
+            style={{
+              transform: `rotate(${secondDegrees}deg)`
+            }}
+          />
+          <div className="center-dot" />
         </div>
-      );
-    }
 
-    // Render the Clock component into the root element
-    ReactDOM.render(<Clock />, document.getElementById('root'));
-  </script>
+        <div className="digital-time">
+          {hours12.toString().padStart(2, '0')}:
+          {minutes.toString().padStart(2, '0')}:
+          {seconds.toString().padStart(2, '0')} {period}
+        </div>
+      </div>
+    );
+  }
+
+  // Render the Clock component into the root element
+  ReactDOM.render(<Clock />, document.getElementById('root'));
+</script>
 
   <!-- Your CSS -->
   <style>
